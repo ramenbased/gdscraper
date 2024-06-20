@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"time"
@@ -15,24 +16,7 @@ func Er(err error) {
 	}
 }
 
-func getHtml() string {
-	url := "https://growdiaries.com/auth/signin"
-
-	ctx, cancel, err := cu.New(cu.NewConfig(
-		// Remove this if you want to see a browser window.
-		//cu.WithHeadless(),
-		// If the webelement is not found within 10 seconds, timeout.
-		cu.WithChromeFlags(chromedp.WindowSize(600, 800)),
-	//cu.WithTimeout(10*time.Second),
-	))
-
-	if err != nil {
-		panic(err)
-	}
-	defer cancel()
-	log.Println("Starting Chrome")
-
-	var outer string
+func login(ctx context.Context, url string) {
 	if err := chromedp.Run(ctx,
 		chromedp.Navigate(url),
 		chromedp.Sleep(20*time.Second),
@@ -42,17 +26,40 @@ func getHtml() string {
 		chromedp.MouseClickXY(165, 480),
 		chromedp.Sleep(5*time.Second),
 		chromedp.EvaluateAsDevTools("document.querySelector('.btn.primary').click()", nil),
-		chromedp.Sleep(20*time.Second),
+		chromedp.Sleep(15*time.Second),
 	); err != nil {
 		log.Fatal(err)
 	}
+}
 
-	return outer
+func test(ctx context.Context) {
+	if err := chromedp.Run(ctx,
+		chromedp.Navigate("https://growdiaries.com/diaries/54096-royal-queen-seeds-northern-light-grow-journal-by-w0oxtard/week/321888"),
+		chromedp.Sleep(10*time.Second),
+	); err != nil {
+		log.Fatal(err)
+	}
 }
 
 func main() {
+	var url = "https://growdiaries.com/auth/signin"
+	var outer string
 
-	outer := getHtml()
+	ctx, cancel, err := cu.New(cu.NewConfig(
+		//cu.WithHeadless(),
+		cu.WithChromeFlags(chromedp.WindowSize(600, 800)),
+	))
+	if err != nil {
+		panic(err)
+	}
+	defer cancel()
+	log.Println("Starting Chrome")
+
+	//login
+
+	login(ctx, url)
+	test(ctx)
+
 	fmt.Println(outer)
 
 	/*
