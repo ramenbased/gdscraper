@@ -4,13 +4,11 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"strings"
 	"time"
 
 	cu "github.com/Davincible/chromedp-undetected"
 	"github.com/chromedp/chromedp"
 	"github.com/chromedp/chromedp/kb"
-	"golang.org/x/net/html"
 )
 
 func Er(err error) {
@@ -19,26 +17,10 @@ func Er(err error) {
 	}
 }
 
-func login(ctx context.Context, url string) {
-	if err := chromedp.Run(ctx,
-		chromedp.Navigate(url),
-		chromedp.Sleep(20*time.Second),
-		chromedp.WaitVisible("#email"),
-		chromedp.SendKeys("#email", "totallyhuman@cock.li"),
-		chromedp.SendKeys("#password", "iamhuman"),
-		chromedp.MouseClickXY(165, 480),
-		chromedp.Sleep(5*time.Second),
-		chromedp.EvaluateAsDevTools("document.querySelector('.btn.primary').click()", nil),
-		chromedp.Sleep(15*time.Second),
-	); err != nil {
-		log.Fatal(err)
-	}
-}
-
-func getUserReportsListHTML(ctx context.Context) string {
+func getUserDiariesListHTML(ctx context.Context, strain string) string {
 	var rv string
 	if err := chromedp.Run(ctx,
-		chromedp.Navigate("https://growdiaries.com/seedbank/royal-queen-seeds/northern-light/diaries"),
+		chromedp.Navigate("https://growdiaries.com/seedbank/"+strain+"/diaries"),
 		chromedp.Sleep(3*time.Second),
 		chromedp.ActionFunc(func(ctx context.Context) error {
 			//how many times scroll to load
@@ -55,33 +37,6 @@ func getUserReportsListHTML(ctx context.Context) string {
 	return rv
 }
 
-func compileUserReportsList(outer string) {
-	sr := strings.NewReader(outer)
-	doc, err := html.Parse(sr)
-	Er(err)
-
-	var f func(*html.Node)
-	f = func(n *html.Node) {
-		if n.Type == html.ElementNode {
-			for _, i := range n.Attr {
-				//fmt.Printf("KEY: %v, VAL: %v", n.Key, n.Val)
-				if i.Key == "href" {
-					for _, y := range n.Attr {
-						if y.Key == "class" && y.Val == "name" {
-							fmt.Println(i.Val)
-						}
-					}
-
-				}
-			}
-		}
-		for c := n.FirstChild; c != nil; c = c.NextSibling {
-			f(c)
-		}
-	}
-	f(doc)
-}
-
 func main() {
 	//var url = "https://growdiaries.com/auth/signin"
 
@@ -93,11 +48,10 @@ func main() {
 		panic(err)
 	}
 	defer cancel()
-	log.Println("Starting Chrome")
-
-	//login
 
 	//login(ctx, url)
-	userReportsList := getUserReportsListHTML(ctx)
-	compileUserReportsList(userReportsList)
+	//userDiariesList := getUserDiariesListHTML(ctx, "royal-queen-seeds/northern-light")
+	//diariesListURLs := compileUserDiariesList(userDiariesList)
+	var diariesListURLs = []string{"/diaries/213233-royal-queen-seeds-northern-light-grow-journal-by-eigenheit"}
+	getUserDiary(ctx, diariesListURLs)
 }
