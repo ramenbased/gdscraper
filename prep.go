@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/chromedp/chromedp"
+	"github.com/chromedp/chromedp/kb"
 	"golang.org/x/net/html"
 )
 
@@ -57,21 +58,22 @@ func compileUserDiariesList(outer string) []string {
 	return rv
 }
 
-func getUserDiary(ctx context.Context, URLs []string) {
-	var items string
-	for _, reportURL := range URLs {
-		fmt.Printf("visiting %v \n", "https://growdiaries.com"+reportURL)
-		if err := chromedp.Run(ctx,
-			chromedp.Navigate("https://growdiaries.com"+reportURL),
-			chromedp.Sleep(5*time.Second),
-			chromedp.InnerHTML(".report_items.report_seeds", &items),
-			chromedp.ActionFunc(func(ctx context.Context) error {
-				//get and add items
-				fmt.Println(items)
-				return nil
-			}),
-		); err != nil {
-			panic(err)
-		}
+func getUserDiariesListHTML(ctx context.Context, strain string) string {
+	var rv string
+	if err := chromedp.Run(ctx,
+		chromedp.Navigate("https://growdiaries.com/seedbank/"+strain+"/diaries"),
+		chromedp.Sleep(3*time.Second),
+		chromedp.ActionFunc(func(ctx context.Context) error {
+			//how many times scroll to load
+			for i := 0; i <= 1; i++ {
+				chromedp.KeyEvent(kb.End).Do(ctx)
+				chromedp.Sleep(2 * time.Second).Do(ctx)
+			}
+			return nil
+		}),
+		chromedp.OuterHTML(".report_boxs.reports_grid", &rv),
+	); err != nil {
+		log.Fatal(err)
 	}
+	return rv
 }

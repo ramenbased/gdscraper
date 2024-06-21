@@ -4,11 +4,12 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"strings"
 	"time"
 
 	cu "github.com/Davincible/chromedp-undetected"
 	"github.com/chromedp/chromedp"
-	"github.com/chromedp/chromedp/kb"
+	"golang.org/x/net/html"
 )
 
 func Er(err error) {
@@ -17,24 +18,53 @@ func Er(err error) {
 	}
 }
 
-func getUserDiariesListHTML(ctx context.Context, strain string) string {
-	var rv string
-	if err := chromedp.Run(ctx,
-		chromedp.Navigate("https://growdiaries.com/seedbank/"+strain+"/diaries"),
-		chromedp.Sleep(3*time.Second),
-		chromedp.ActionFunc(func(ctx context.Context) error {
-			//how many times scroll to load
-			for i := 0; i <= 1; i++ {
-				chromedp.KeyEvent(kb.End).Do(ctx)
-				chromedp.Sleep(2 * time.Second).Do(ctx)
+func compileItems(itemsHTML string) {
+	sr := strings.NewReader(itemsHTML)
+	doc, err := html.Parse(sr)
+	Er(err)
+
+	var f func(*html.Node)
+	f = func(n *html.Node) {
+		//RoomType and Substrate
+		if n.Type == html.ElementNode && n.Data == "div" {
+			for _, a := range n.Attr {
+				if a.Key == "class" && a.Val == "info" {
+					if n.FirstChild != nil && n.FirstChild.Data == "div" {
+						switch n.LastChild.FirstChild.Data {
+						//TODO: fill Structs, SOIL CAN BE MULTIPLE ENTRIES
+						case "Room Type":
+							fmt.Printf("Room Type: %v \n", n.FirstChild.FirstChild.Data)
+						case "Grow medium":
+							fmt.Printf("Grow Medium: %v \n", n.FirstChild.FirstChild.Data)
+						}
+					}
+				}
 			}
-			return nil
-		}),
-		chromedp.OuterHTML(".report_boxs.reports_grid", &rv),
-	); err != nil {
-		log.Fatal(err)
+		}
+		for c := n.FirstChild; c != nil; c = c.NextSibling {
+			f(c)
+		}
 	}
-	return rv
+	f(doc)
+}
+
+func getUserDiary(ctx context.Context, URLs []string) {
+	var itemsHTML string
+	for _, reportURL := range URLs {
+		fmt.Printf("visiting %v \n", "https://growdiaries.com"+reportURL)
+		if err := chromedp.Run(ctx,
+			chromedp.Navigate("https://growdiaries.com"+reportURL),
+			chromedp.Sleep(3*time.Second),
+			chromedp.OuterHTML(".report_items.report_seeds", &itemsHTML),
+			chromedp.ActionFunc(func(ctx context.Context) error {
+				//get and add items
+				compileItems(itemsHTML)
+				return nil
+			}),
+		); err != nil {
+			log.Fatal(err)
+		}
+	}
 }
 
 func main() {
@@ -50,8 +80,8 @@ func main() {
 	defer cancel()
 
 	//login(ctx, url)
-	//userDiariesList := getUserDiariesListHTML(ctx, "royal-queen-seeds/northern-light")
-	//diariesListURLs := compileUserDiariesList(userDiariesList)
-	var diariesListURLs = []string{"/diaries/213233-royal-queen-seeds-northern-light-grow-journal-by-eigenheit"}
+	userDiariesList := getUserDiariesListHTML(ctx, "royal-queen-seeds/northern-light")
+	diariesListURLs := compileUserDiariesList(userDiariesList)
+	//var diariesListURLs = []string{"/diaries/213233-royal-queen-seeds-northern-light-grow-journal-by-eigenheit"}
 	getUserDiary(ctx, diariesListURLs)
 }

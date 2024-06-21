@@ -20,12 +20,9 @@ type Harvest struct {
 }
 
 type ReportItems struct {
-	Breed      string
-	Strain     string
-	LightVeg   string
-	LightBloom string
-	RoomType   string
-	//TODO: Training
+	//TODO Light tent etc..
+	RoomType  string
+	Substrate []string
 }
 
 type Week struct {
