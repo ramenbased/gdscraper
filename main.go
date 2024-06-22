@@ -48,8 +48,35 @@ func compileItems(itemsHTML string) {
 	f(doc)
 }
 
+func compileWeekOverview(weeksHTML string) {
+	sr := strings.NewReader(weeksHTML)
+	doc, err := html.Parse(sr)
+	Er(err)
+
+	var f func(*html.Node)
+	f = func(n *html.Node) {
+		if n.Type == html.ElementNode && n.Data == "a" {
+			for _, a := range n.Attr {
+				if a.Key == "data-faza" {
+					for _, a2 := range n.Attr {
+						if a2.Key == "href" {
+							fmt.Printf("Weektype: %v %v \n", a.Val, a2.Val)
+						}
+					}
+				}
+			}
+		}
+		for c := n.FirstChild; c != nil; c = c.NextSibling {
+			f(c)
+		}
+	}
+	f(doc)
+
+}
+
 func getUserDiary(ctx context.Context, URLs []string) {
 	var itemsHTML string
+	var weeksHTML string
 	for _, reportURL := range URLs {
 		fmt.Printf("visiting %v \n", "https://growdiaries.com"+reportURL)
 		if err := chromedp.Run(ctx,
@@ -59,6 +86,12 @@ func getUserDiary(ctx context.Context, URLs []string) {
 			chromedp.ActionFunc(func(ctx context.Context) error {
 				//get and add items
 				compileItems(itemsHTML)
+				return nil
+			}),
+			chromedp.OuterHTML(".day_items", &weeksHTML),
+			chromedp.ActionFunc(func(ctx context.Context) error {
+				//get and add items
+				compileWeekOverview(weeksHTML)
 				return nil
 			}),
 		); err != nil {
