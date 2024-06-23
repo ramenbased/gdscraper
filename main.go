@@ -18,11 +18,11 @@ func Er(err error) {
 	}
 }
 
+// Week overview
 func compileItems(itemsHTML string) {
 	var sr = strings.NewReader(itemsHTML)
 	var doc, err = html.Parse(sr)
 	Er(err)
-
 	var f func(*html.Node)
 	f = func(n *html.Node) {
 		//RoomType and Substrate
@@ -80,42 +80,7 @@ func compileWeekOverview(weeksHTML string) *TempWeeks {
 	return rv
 }
 
-func compileWeek(weekHTML string) {
-	var sr = strings.NewReader(weekHTML)
-	var doc, err = html.Parse(sr)
-	if err != nil {
-		panic(err)
-	}
-
-	var f func(*html.Node)
-	f = func(n *html.Node) {
-		if n.Type == html.ElementNode {
-			for _, a := range n.Attr {
-				//fertilizers
-				if a.Key == "class" && a.Val == "fert_item" {
-					for ch := n.FirstChild; ch != nil; ch = ch.NextSibling {
-						if ch.Type == html.ElementNode {
-							switch ch.Attr[1].Val {
-							case "fert_val":
-								fmt.Println(ch.FirstChild.Data)
-							case "fert_name":
-								fmt.Println(ch.FirstChild.LastChild.Data)
-							default:
-								fmt.Println("nothing found...?")
-							}
-						}
-					}
-					fmt.Println("TODO: add to struct")
-				}
-			}
-		}
-		for c := n.FirstChild; c != nil; c = c.NextSibling {
-			f(c)
-		}
-	}
-	f(doc)
-}
-
+// Actual Weeks
 func getUserDiary(ctx context.Context, URLs []string) {
 	var itemsHTML string
 	var weeksHTML string
@@ -127,20 +92,22 @@ func getUserDiary(ctx context.Context, URLs []string) {
 			chromedp.Navigate("https://growdiaries.com"+reportURL),
 			chromedp.Sleep(3*time.Second),
 			chromedp.OuterHTML(".report_items.report_seeds", &itemsHTML),
+
 			chromedp.ActionFunc(func(ctx context.Context) error { compileItems(itemsHTML); return nil }),
 			chromedp.OuterHTML(".day_items", &weeksHTML),
+
 			chromedp.ActionFunc(func(ctx context.Context) error {
 				weeks := compileWeekOverview(weeksHTML)
-
 				//iterate over weeks
 				for _, w := range weeks.w {
 					var diaryHTML string
 					fmt.Println(w.Link, w.WeekType)
 					if err := chromedp.Run(ctx,
 						chromedp.Navigate("https://growdiaries.com"+w.Link),
-						chromedp.Sleep(5*time.Second),
-						chromedp.OuterHTML("body", &diaryHTML),
-						chromedp.ActionFunc(func(ctx context.Context) error { compileWeek(diaryHTML); return nil }),
+						chromedp.Sleep(10*time.Second),
+						chromedp.OuterHTML("#app", &diaryHTML, chromedp.ByID),
+
+						chromedp.ActionFunc(func(ctx context.Context) error { compileWeek(diaryHTML, w); return nil }),
 					); err != nil {
 						log.Fatal(err)
 					}
@@ -168,7 +135,7 @@ func main() {
 	//login(ctx, url)
 	//userDiariesList := getUserDiariesListHTML(ctx, "royal-queen-seeds/northern-light")
 	//diariesListURLs := compileUserDiariesList(userDiariesList)
-	var diariesListURLs = []string{"/diaries/213233-royal-queen-seeds-northern-light-grow-journal-by-eigenheit"}
-	//var diariesListURLs = []string{"/diaries/162365-grow-journal-by-manilagrowop"}
+	var diariesListURLs = []string{"/diaries/197545-royal-queen-seeds-northern-light-grow-journal-by-nugcaleb/week/1127857"}
+	//var diariesListURLs = []string{"/diaries/213233-royal-queen-seeds-northern-light-grow-journal-by-eigenheit"}
 	getUserDiary(ctx, diariesListURLs)
 }
