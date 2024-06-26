@@ -85,11 +85,10 @@ func getUserDiary(ctx context.Context, URLs []string) {
 	var itemsHTML string
 	var weeksHTML string
 	//iterate over URLs
-	for _, reportURL := range URLs {
-		fmt.Printf("visiting %v \n", "https://growdiaries.com"+reportURL)
+	for _, diaryURL := range URLs {
 
 		if err := chromedp.Run(ctx,
-			chromedp.Navigate("https://growdiaries.com"+reportURL),
+			chromedp.Navigate("https://growdiaries.com"+diaryURL),
 			chromedp.Sleep(3*time.Second),
 			chromedp.OuterHTML(".report_items.report_seeds", &itemsHTML),
 
@@ -98,6 +97,13 @@ func getUserDiary(ctx context.Context, URLs []string) {
 
 			chromedp.ActionFunc(func(ctx context.Context) error {
 				weeks := compileWeekOverview(weeksHTML)
+				//start data structure
+				var main _Main
+				main.ID = regexGetID(diaryURL)
+				main.URL = diaryURL
+				fmt.Printf("Navigate to new Diary: %v \n", "https://growdiaries.com"+main.URL)
+				fmt.Printf("DiaryID: %v\n", main.ID)
+
 				//iterate over weeks
 				for _, w := range weeks.w {
 					var diaryHTML string
