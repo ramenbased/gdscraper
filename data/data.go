@@ -4,10 +4,10 @@ import "fmt"
 
 // --- Temp DB
 type Tables struct {
-	TblDiary   []Diary
-	TblBreeder []Breeder
-	TblSoil    []Soil
-	TblWeek    []Week
+	TblDiary      []Diary
+	TblBreeder    []Breeder
+	TblSoil       []Soil
+	TblFertilizer []Fertilizer
 }
 
 // --- Main
@@ -17,8 +17,8 @@ type Diary struct {
 	URL         string //filled
 }
 
-func (d *Diary) AddDiary(ID string, URL string, roomType string, tbl *Tables) {
-	d.ID = ID
+func (d *Diary) AddDiary(id string, URL string, roomType string, tbl *Tables) {
+	d.ID = id
 	d.URL = URL
 	d.Environment = roomType
 	tbl.TblDiary = append(tbl.TblDiary, *d)
@@ -27,19 +27,17 @@ func (d *Diary) AddDiary(ID string, URL string, roomType string, tbl *Tables) {
 }
 
 type Soil struct {
-	ID         string
-	Type       string
-	Percentage float64
+	ID         string //filled
+	Type       string //filled
+	Percentage string //filled TODO: float?
 }
 
-func (s *Soil) AddSoil(ID string, soils []string, tbl *Tables) {
-	for _, soil := range soils {
-		s.ID = ID
-		s.Type = soil
-		//s.Percentage = Percentage
-		tbl.TblSoil = append(tbl.TblSoil, *s)
-		fmt.Printf("addSoil --> s.ID: %v s.Type: %v\n", s.ID, s.Type)
-	}
+func (s *Soil) AddSoil(id string, soil string, percent string, tbl *Tables) {
+	s.ID = id
+	s.Type = soil
+	s.Percentage = percent
+	tbl.TblSoil = append(tbl.TblSoil, *s)
+	fmt.Printf("addSoil --> s.ID: %v s.Type: %v s.Percentage: %v\n", s.ID, s.Type, s.Percentage)
 }
 
 // TODO: Breeder/Strain how to data structure lmfao
@@ -60,10 +58,18 @@ type Week struct {
 }
 
 type Fertilizer struct {
-	ID     int
-	WeekNo int
-	Name   string
-	Amount float64 //xx.x ml/L float??
+	ID     string //filled
+	WeekNo int    //TODO: not filled bro
+	Name   string //filled
+	Amount string //filled TODO: xx.x ml/L and why gallons after login scrape?? float??
+}
+
+func (f *Fertilizer) AddFert(id string, name string, amount string, tbl *Tables) {
+	f.ID = id
+	f.Name = name
+	f.Amount = amount
+	tbl.TblFertilizer = append(tbl.TblFertilizer, *f)
+	fmt.Printf("addFert --> f.ID: %v f.Name: %v f.Amount: %v\n", f.ID, f.Name, f.Amount)
 }
 
 type Nutrients struct {

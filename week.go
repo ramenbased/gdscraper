@@ -2,12 +2,14 @@ package main
 
 import (
 	"fmt"
+	"gdscraper/data"
 	"strings"
 
 	"golang.org/x/net/html"
 )
 
-func params(doc *html.Node) {
+/*
+func params(doc *html.Node, id string, tbl *data.Tables) {
 	var f func(*html.Node)
 	f = func(n *html.Node) {
 		if n.Type == html.ElementNode {
@@ -25,15 +27,18 @@ func params(doc *html.Node) {
 	}
 	f(doc)
 }
-func ferts(doc *html.Node) {
+*/
+
+func ferts(doc *html.Node, id string, tbl *data.Tables) {
 	var f func(*html.Node)
 	f = func(n *html.Node) {
 		if n.Type == html.ElementNode {
 			for _, a := range n.Attr {
 				if a.Key == "class" && a.Val == "fert_item" {
-					fmt.Printf("%v ---> %v \n",
-						n.FirstChild.NextSibling.FirstChild.FirstChild.Data,
-						n.FirstChild.NextSibling.NextSibling.NextSibling.FirstChild.Data)
+					var f = new(data.Fertilizer)
+					name := n.FirstChild.NextSibling.FirstChild.FirstChild.Data
+					amount := n.FirstChild.NextSibling.NextSibling.NextSibling.FirstChild.Data
+					f.AddFert(id, name, amount, tbl)
 				}
 			}
 		}
@@ -44,7 +49,7 @@ func ferts(doc *html.Node) {
 	f(doc)
 }
 
-func compileWeek(weekHTML string, w TempWeek) {
+func compileDiaryWeek(weekHTML string, id string, w TempWeek, tbl *data.Tables) {
 	sr := strings.NewReader(weekHTML)
 	doc, err := html.Parse(sr)
 	if err != nil {
@@ -55,12 +60,12 @@ func compileWeek(weekHTML string, w TempWeek) {
 		fmt.Println("Germination..")
 	case "0":
 		fmt.Println("Veg..")
-		params(doc)
-		ferts(doc)
+		//params(doc, id, tbl)
+		ferts(doc, id, tbl)
 	case "1":
 		fmt.Println("Bloom..")
-		params(doc)
-		ferts(doc)
+		//params(doc, id, tbl)
+		ferts(doc, id, tbl)
 	case "2":
 		fmt.Println("Harvest")
 	}
