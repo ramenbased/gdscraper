@@ -1,4 +1,4 @@
-module suckmydick
+module gdscraper
 
 go 1.22.0
 

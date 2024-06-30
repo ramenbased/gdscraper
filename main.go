@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"gdscraper/data"
 	"log"
 	"strings"
 	"time"
@@ -19,10 +20,11 @@ func Er(err error) {
 }
 
 // Week overview
-func compileItems(itemsHTML string) {
+func compileItems(itemsHTML string) (roomType string, growMedium []string) {
 	var sr = strings.NewReader(itemsHTML)
 	var doc, err = html.Parse(sr)
 	Er(err)
+
 	var f func(*html.Node)
 	f = func(n *html.Node) {
 		//TODO: fill structs
@@ -33,9 +35,9 @@ func compileItems(itemsHTML string) {
 					if n.FirstChild != nil && n.FirstChild.Data == "div" {
 						switch n.LastChild.FirstChild.Data {
 						case "Room Type":
-							fmt.Printf("Room Type: %v \n", n.FirstChild.FirstChild.Data)
+							roomType = n.FirstChild.FirstChild.Data
 						case "Grow medium":
-							fmt.Printf("Grow Medium: %v \n", n.FirstChild.FirstChild.Data)
+							growMedium = append(growMedium, n.FirstChild.FirstChild.Data)
 						}
 					}
 				}
@@ -46,6 +48,7 @@ func compileItems(itemsHTML string) {
 		}
 	}
 	f(doc)
+	return roomType, growMedium
 }
 
 func compileWeekOverview(weeksHTML string) *TempWeeks {
@@ -81,7 +84,7 @@ func compileWeekOverview(weeksHTML string) *TempWeeks {
 }
 
 // Actual Weeks
-func getUserDiary(ctx context.Context, URLs []string) {
+func getUserDiary(ctx context.Context, URLs []string, tbl *data.Tables) {
 	var itemsHTML string
 	var weeksHTML string
 	//iterate over URLs
@@ -94,20 +97,20 @@ func getUserDiary(ctx context.Context, URLs []string) {
 			chromedp.OuterHTML(".day_items", &weeksHTML),
 
 			chromedp.ActionFunc(func(ctx context.Context) error {
-				//start data structure here
-				var main Main
-				main.ID = regexGetID(diaryURL)
-				main.URL = diaryURL
-				fmt.Printf("Navigate to new Diary: %v \n", "https://growdiaries.com"+main.URL)
-				fmt.Printf("DiaryID: %v\n", main.ID)
-
 				//TODO: Sanity check here
-				compileItems(itemsHTML)
+				roomType, soils := compileItems(itemsHTML) //TODO: return soils with %
 
-				weeks := compileWeekOverview(weeksHTML) //returns TempWeek stuct
+				var diary = new(data.Diary)
+				var soil = new(data.Soil)
+				diary.AddDiary(regexGetID(diaryURL), diaryURL, roomType, tbl)
+				soil.AddSoil(diary.ID, soils, tbl)
+
+				//TODO: add soils with % and ID from diary.ID)
+
+				weeks := compileWeekOverview(weeksHTML) //returns TempWeek stuct for chrome to iterate over weeks
 				for _, w := range weeks.w {
 					var diaryHTML string
-					fmt.Println(w.Link, w.WeekType)
+					fmt.Println("internal.. ", w.Link, w.WeekType)
 					if err := chromedp.Run(ctx,
 						chromedp.Navigate("https://growdiaries.com"+w.Link),
 						chromedp.Sleep(10*time.Second),
@@ -127,8 +130,6 @@ func getUserDiary(ctx context.Context, URLs []string) {
 }
 
 func main() {
-	//var url = "https://growdiaries.com/auth/signin"
-
 	ctx, cancel, err := cu.New(cu.NewConfig(
 		//cu.WithHeadless(),
 		cu.WithChromeFlags(chromedp.WindowSize(600, 800)),
@@ -138,10 +139,14 @@ func main() {
 	}
 	defer cancel()
 
-	//login(ctx, url)
+	var tbl = new(data.Tables)
+
+	login(ctx, "https://growdiaries.com/auth/signin")
 	//userDiariesList := getUserDiariesListHTML(ctx, "royal-queen-seeds/northern-light")
 	//diariesListURLs := compileUserDiariesList(userDiariesList)
-	var diariesListURLs = []string{"/diaries/197545-royal-queen-seeds-northern-light-grow-journal-by-nugcaleb"}
+	//var diariesListURLs = []string{"/diaries/197545-royal-queen-seeds-northern-light-grow-journal-by-nugcaleb"} //random test
+	var diariesListURLs = []string{"/diaries/149912-grow-journal-by-madebyfrancesco"} //multiple soils
+
 	//var diariesListURLs = []string{"/diaries/213233-royal-queen-seeds-northern-light-grow-journal-by-eigenheit"}
-	getUserDiary(ctx, diariesListURLs)
+	getUserDiary(ctx, diariesListURLs, tbl)
 }
