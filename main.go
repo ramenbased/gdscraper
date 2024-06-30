@@ -25,13 +25,13 @@ func compileItems(itemsHTML string) {
 	Er(err)
 	var f func(*html.Node)
 	f = func(n *html.Node) {
+		//TODO: fill structs
 		//RoomType and Substrate
 		if n.Type == html.ElementNode && n.Data == "div" {
 			for _, a := range n.Attr {
 				if a.Key == "class" && a.Val == "info" {
 					if n.FirstChild != nil && n.FirstChild.Data == "div" {
 						switch n.LastChild.FirstChild.Data {
-						//TODO: fill Structs, SOIL CAN BE MULTIPLE ENTRIES
 						case "Room Type":
 							fmt.Printf("Room Type: %v \n", n.FirstChild.FirstChild.Data)
 						case "Grow medium":
@@ -91,20 +91,20 @@ func getUserDiary(ctx context.Context, URLs []string) {
 			chromedp.Navigate("https://growdiaries.com"+diaryURL),
 			chromedp.Sleep(3*time.Second),
 			chromedp.OuterHTML(".report_items.report_seeds", &itemsHTML),
-
-			chromedp.ActionFunc(func(ctx context.Context) error { compileItems(itemsHTML); return nil }),
 			chromedp.OuterHTML(".day_items", &weeksHTML),
 
 			chromedp.ActionFunc(func(ctx context.Context) error {
-				weeks := compileWeekOverview(weeksHTML)
-				//start data structure
-				var main _Main
+				//start data structure here
+				var main Main
 				main.ID = regexGetID(diaryURL)
 				main.URL = diaryURL
 				fmt.Printf("Navigate to new Diary: %v \n", "https://growdiaries.com"+main.URL)
 				fmt.Printf("DiaryID: %v\n", main.ID)
 
-				//iterate over weeks
+				//TODO: Sanity check here
+				compileItems(itemsHTML)
+
+				weeks := compileWeekOverview(weeksHTML) //returns TempWeek stuct
 				for _, w := range weeks.w {
 					var diaryHTML string
 					fmt.Println(w.Link, w.WeekType)
@@ -141,7 +141,7 @@ func main() {
 	//login(ctx, url)
 	//userDiariesList := getUserDiariesListHTML(ctx, "royal-queen-seeds/northern-light")
 	//diariesListURLs := compileUserDiariesList(userDiariesList)
-	var diariesListURLs = []string{"/diaries/197545-royal-queen-seeds-northern-light-grow-journal-by-nugcaleb/week/1127857"}
+	var diariesListURLs = []string{"/diaries/197545-royal-queen-seeds-northern-light-grow-journal-by-nugcaleb"}
 	//var diariesListURLs = []string{"/diaries/213233-royal-queen-seeds-northern-light-grow-journal-by-eigenheit"}
 	getUserDiary(ctx, diariesListURLs)
 }

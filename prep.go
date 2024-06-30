@@ -29,6 +29,7 @@ func login(ctx context.Context, url string) {
 }
 
 func compileUserDiariesList(outer string) []string {
+	//takes full html of one strain and gets URLs to report
 	var rv []string
 
 	sr := strings.NewReader(outer)
@@ -59,6 +60,7 @@ func compileUserDiariesList(outer string) []string {
 }
 
 func getUserDiariesListHTML(ctx context.Context, strain string) string {
+	//scrolls down one strain of breeder to get full loaded html
 	var rv string
 	if err := chromedp.Run(ctx,
 		chromedp.Navigate("https://growdiaries.com/seedbank/"+strain+"/diaries"),

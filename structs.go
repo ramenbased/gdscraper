@@ -1,6 +1,6 @@
 package main
 
-// Temp
+// --- Temp
 type TempWeeks struct {
 	w []TempWeek
 }
@@ -10,20 +10,23 @@ type TempWeek struct {
 	Link     string
 }
 
-// Main
-
-type Results struct {
-	Main []_Main
+// --- Temp DB
+type Tables struct {
+	TblMain    []Main
+	TblBreeder []Breeder
+	TblSoil    []Soil
+	TblWeek    []Week
 }
 
-type _Main struct {
+// --- Main
+type Main struct {
 	ID           string //TODO: data type int
 	Environment  string
 	WateringType string
 	URL          string
 }
 
-// unsure
+// TODO:unsure where to scrape from and DB
 type Breeder struct {
 	Name   string
 	Strain string

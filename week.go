@@ -30,7 +30,6 @@ func ferts(doc *html.Node) {
 	f = func(n *html.Node) {
 		if n.Type == html.ElementNode {
 			for _, a := range n.Attr {
-				//fertilizers
 				if a.Key == "class" && a.Val == "fert_item" {
 					fmt.Printf("%v ---> %v \n",
 						n.FirstChild.NextSibling.FirstChild.FirstChild.Data,
@@ -44,37 +43,6 @@ func ferts(doc *html.Node) {
 	}
 	f(doc)
 }
-
-/*
-	func ferts(doc *html.Node) {
-		var f func(*html.Node)
-		f = func(n *html.Node) {
-			if n.Type == html.ElementNode {
-				for _, a := range n.Attr {
-					//fertilizers
-					if a.Key == "class" && a.Val == "fert_item" {
-						for ch := n.FirstChild; ch != nil; ch = ch.NextSibling {
-							if ch.Type == html.ElementNode {
-								//does attribute positoin change?
-								switch ch.Attr[0].Val {
-								case "fert_val":
-									fmt.Println(ch.FirstChild.Data)
-								case "fert_name":
-									fmt.Println(ch.FirstChild.LastChild.Data)
-								}
-							}
-						}
-						fmt.Println("-----")
-					}
-				}
-			}
-			for c := n.FirstChild; c != nil; c = c.NextSibling {
-				f(c)
-			}
-		}
-		f(doc)
-	}
-*/
 
 func compileWeek(weekHTML string, w TempWeek) {
 	sr := strings.NewReader(weekHTML)
