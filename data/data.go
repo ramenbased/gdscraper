@@ -1,11 +1,14 @@
 package data
 
-import "fmt"
+import (
+	"fmt"
+)
 
 // --- Temp DB
 type Tables struct {
 	TblDiary      []Diary
 	TblBreeder    []Breeder
+	TblWeek       []Week
 	TblSoil       []Soil
 	TblFertilizer []Fertilizer
 }
@@ -47,14 +50,22 @@ type Breeder struct {
 }
 
 type Week struct {
-	ID       int
-	Week     int
-	Type     string
-	Height   int     //float??
-	Temp     int     //float??
-	Humidity int     //float??
-	Water    float64 //Litres per 24h
+	ID       string
+	Week     string //gets it from params(), good idea?
+	WType    string //get from list urls?!
+	Height   string
+	Temp     string
+	Humidity string
 	URL      string
+}
+
+func (w *Week) AddWeek(id string, week string, wType string, height string, tbl *Tables) {
+	w.ID = id
+	w.Week = week
+	w.Height = height
+	w.WType = wType
+	tbl.TblWeek = append(tbl.TblWeek, *w)
+	fmt.Printf("addWeek --> w.ID: %v w.WType: %v w.Week: %v w.Height: %v\n", w.ID, w.WType, w.Week, w.Height)
 }
 
 type Fertilizer struct {
