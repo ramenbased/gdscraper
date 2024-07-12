@@ -19,6 +19,14 @@ func Er(err error) {
 	}
 }
 
+func replaceNilNodeData(n *html.Node) string {
+	if n == nil {
+		return "NULL" //TODO: type?
+	} else {
+		return n.Data
+	}
+}
+
 func compileDiaryItems(itemsHTML string, diaryURL string, tbl *data.Tables) {
 
 	var sr = strings.NewReader(itemsHTML)
@@ -36,7 +44,7 @@ func compileDiaryItems(itemsHTML string, diaryURL string, tbl *data.Tables) {
 						diary.AddDiary(regexGetID(diaryURL), diaryURL, n.FirstChild.FirstChild.Data, tbl)
 					case "Grow medium":
 						var soils = new(data.Soil)
-						soils.AddSoil(regexGetID(diaryURL), n.FirstChild.FirstChild.Data, n.PrevSibling.LastChild.FirstChild.Data, tbl)
+						soils.AddSoil(regexGetID(diaryURL), n.FirstChild.FirstChild.Data, replaceNilNodeData(n.PrevSibling.LastChild.FirstChild), tbl)
 					}
 				}
 			}
@@ -80,6 +88,31 @@ func compileWeekOverview(weeksHTML string) *TempWeeks {
 	return rv
 }
 
+func sanityWeekOverview(weeks *TempWeeks) *TempWeeks {
+	//must have harvest
+	//TODO: no continuity check only amount..
+
+	veg, bloom, harvest := 0, 0, 0
+
+	for _, w := range weeks.w {
+		switch w.WeekType {
+		case "0":
+			veg += 1
+		case "1":
+			bloom += 1
+		case "2":
+			harvest += 1
+		}
+	}
+	if veg >= 2 && bloom >= 4 && harvest == 1 {
+		fmt.Printf("internal: sanity check passed.. veg: %v bloom: %v harvest: %v\n", veg, bloom, harvest)
+		weeks.sanity = true
+	} else {
+		fmt.Println("internal: sanity check not passed, skip..")
+	}
+	return weeks
+}
+
 // Actual Weeks
 func getUserDiary(ctx context.Context, URLs []string, tbl *data.Tables) {
 	var itemsHTML string
@@ -89,30 +122,34 @@ func getUserDiary(ctx context.Context, URLs []string, tbl *data.Tables) {
 
 		if err := chromedp.Run(ctx,
 			chromedp.Navigate("https://growdiaries.com"+diaryURL),
-			chromedp.Sleep(3*time.Second),
+			chromedp.Sleep(5*time.Second),
 			chromedp.OuterHTML(".report_items.report_seeds", &itemsHTML),
 			chromedp.OuterHTML(".day_items", &weeksHTML),
 
 			chromedp.ActionFunc(func(ctx context.Context) error {
-				//TODO: Sanity check here
-				compileDiaryItems(itemsHTML, diaryURL, tbl)
 
 				var htmlID = regexGetID(diaryURL)
 				weeks := compileWeekOverview(weeksHTML) //returns TempWeek stuct for chrome to iterate over weeks
-				for _, w := range weeks.w {
-					var diaryHTML string
-					fmt.Println("internal.. ", w.Link, w.WeekType)
-					if err := chromedp.Run(ctx,
-						chromedp.Navigate("https://growdiaries.com"+w.Link),
-						chromedp.Sleep(10*time.Second),
-						chromedp.OuterHTML("#app", &diaryHTML, chromedp.ByID),
+				saneWeeks := sanityWeekOverview(weeks)
 
-						//TODO: pass ID down and fill structs
-						chromedp.ActionFunc(func(ctx context.Context) error { compileDiaryWeek(diaryHTML, htmlID, w, tbl); return nil }),
-					); err != nil {
-						log.Fatal(err)
+				if saneWeeks.sanity == true {
+					//start data
+					compileDiaryItems(itemsHTML, diaryURL, tbl)
+
+					for _, w := range weeks.w {
+						var diaryHTML string
+						fmt.Println("internal.. ", w.Link, w.WeekType)
+						if err := chromedp.Run(ctx,
+							chromedp.Navigate("https://growdiaries.com"+w.Link),
+							chromedp.Sleep(10*time.Second),
+							chromedp.OuterHTML("#app", &diaryHTML, chromedp.ByID),
+							chromedp.ActionFunc(func(ctx context.Context) error { compileDiaryWeek(diaryHTML, htmlID, w, tbl); return nil }),
+						); err != nil {
+							log.Fatal(err)
+						}
 					}
 				}
+
 				return nil
 			}),
 		); err != nil {
@@ -134,10 +171,12 @@ func main() {
 	var tbl = new(data.Tables)
 
 	//login(ctx, "https://growdiaries.com/auth/signin")
-	//userDiariesList := getUserDiariesListHTML(ctx, "royal-queen-seeds/northern-light")
-	//diariesListURLs := compileUserDiariesList(userDiariesList)
-	//var diariesListURLs = []string{"/diaries/197545-royal-queen-seeds-northern-light-grow-journal-by-nugcaleb"} //random test
-	var diariesListURLs = []string{"/diaries/149912-grow-journal-by-madebyfrancesco"} //multiple soils
+
+	userDiariesList := getUserDiariesListHTML(ctx, "royal-queen-seeds/northern-light")
+	diariesListURLs := compileUserDiariesList(userDiariesList)
+
+	//var diariesListURLs = []string{"/diaries/206876-royal-skywalker-northern-light-o-g-kush-white-widow-special-kush-1-grow-journal-by-millerman543"} //random test
+	//var diariesListURLs = []string{"/diaries/149912-grow-journal-by-madebyfrancesco"} //multiple soils
 
 	//var diariesListURLs = []string{"/diaries/213233-royal-queen-seeds-northern-light-grow-journal-by-eigenheit"}
 	getUserDiary(ctx, diariesListURLs, tbl)

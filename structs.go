@@ -2,7 +2,8 @@ package main
 
 // --- Temp
 type TempWeeks struct {
-	w []TempWeek
+	w      []TempWeek
+	sanity bool //is handled in seperate func
 }
 
 type TempWeek struct {
