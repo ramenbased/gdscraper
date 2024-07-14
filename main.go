@@ -89,8 +89,7 @@ func compileWeekOverview(weeksHTML string) *TempWeeks {
 }
 
 func sanityWeekOverview(weeks *TempWeeks) *TempWeeks {
-	//must have harvest
-	//TODO: no continuity check only amount..
+	//must have harvest.. no continuity check only amount..
 
 	veg, bloom, harvest := 0, 0, 0
 
@@ -104,11 +103,12 @@ func sanityWeekOverview(weeks *TempWeeks) *TempWeeks {
 			harvest += 1
 		}
 	}
-	if veg >= 2 && bloom >= 4 && harvest == 1 {
-		fmt.Printf("internal: sanity check passed.. veg: %v bloom: %v harvest: %v\n", veg, bloom, harvest)
+	//TODO FINAL RULESET!
+	if veg >= 2 && bloom >= 4 && harvest < 2 {
+		fmt.Printf("internal.. sanity check passed.. veg: %v bloom: %v harvest: %v\n", veg, bloom, harvest)
 		weeks.sanity = true
 	} else {
-		fmt.Println("internal: sanity check not passed, skip..")
+		fmt.Println("internal.. sanity check not passed, skip..")
 	}
 	return weeks
 }
@@ -172,13 +172,12 @@ func main() {
 
 	//login(ctx, "https://growdiaries.com/auth/signin")
 
-	userDiariesList := getUserDiariesListHTML(ctx, "royal-queen-seeds/northern-light")
-	diariesListURLs := compileUserDiariesList(userDiariesList)
+	//userDiariesList := getUserDiariesListHTML(ctx, "royal-queen-seeds/northern-light")
+	//diariesListURLs := compileUserDiariesList(userDiariesList)
 
-	//var diariesListURLs = []string{"/diaries/206876-royal-skywalker-northern-light-o-g-kush-white-widow-special-kush-1-grow-journal-by-millerman543"} //random test
+	var diariesListURLs = []string{"/diaries/209445-zamnesia-seeds-x-10th-anniversary-grow-journal-by-schnabeldino"} //random test
 	//var diariesListURLs = []string{"/diaries/149912-grow-journal-by-madebyfrancesco"} //multiple soils
 
 	//var diariesListURLs = []string{"/diaries/213233-royal-queen-seeds-northern-light-grow-journal-by-eigenheit"}
 	getUserDiary(ctx, diariesListURLs, tbl)
-	fmt.Println(tbl)
 }

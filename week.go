@@ -8,7 +8,7 @@ import (
 	"golang.org/x/net/html"
 )
 
-func params(doc *html.Node, id string, tbl *data.Tables) {
+func week(doc *html.Node, id string, tbl *data.Tables) *data.Week {
 	var w = new(data.Week)
 	//w fills up in loop then gives to rw.AddWeek()
 	var f func(*html.Node)
@@ -23,12 +23,28 @@ func params(doc *html.Node, id string, tbl *data.Tables) {
 					switch key {
 					case "Height":
 						w.Height = val
-					case "Vegetation": //really week no here?..
+					case "Vegetation":
 						w.WType = key
 						w.Week = val
 					case "Flowering":
 						w.WType = key
 						w.Week = val
+					case "Day Air Temperature":
+						w.TempDay = val
+					case "Night Air Temperature":
+						w.TempNight = val
+					case "Air Humidity":
+						w.Humidity = val
+					case "Pot Size":
+						w.PotSize = val
+					case "Watering Volume Per Plant Per 24h":
+						w.Water = val
+					case "pH":
+						w.PH = val
+					case "Light Schedule":
+						w.LightS = val
+					case "TDS":
+						w.TDS = val
 					}
 				}
 			}
@@ -39,10 +55,11 @@ func params(doc *html.Node, id string, tbl *data.Tables) {
 	}
 	f(doc)
 	var rw = new(data.Week)
-	rw.AddWeek(id, w.Week, w.WType, w.Height, tbl)
+	rw.AddWeek(id, w.Week, w.WType, w.Height, w.TempDay, w.TempNight, w.Humidity, w.PotSize, w.Water, w.PH, w.LightS, w.TDS, tbl)
+	return rw
 }
 
-func ferts(doc *html.Node, id string, tbl *data.Tables) {
+func ferts(doc *html.Node, id string, tbl *data.Tables, weekID string) {
 	var f func(*html.Node)
 	f = func(n *html.Node) {
 		if n.Type == html.ElementNode {
@@ -51,7 +68,7 @@ func ferts(doc *html.Node, id string, tbl *data.Tables) {
 					var f = new(data.Fertilizer)
 					name := n.FirstChild.NextSibling.FirstChild.FirstChild.Data
 					amount := n.FirstChild.NextSibling.NextSibling.NextSibling.FirstChild.Data
-					f.AddFert(id, name, amount, tbl)
+					f.AddFert(id, weekID, name, amount, tbl)
 				}
 			}
 		}
@@ -60,6 +77,43 @@ func ferts(doc *html.Node, id string, tbl *data.Tables) {
 		}
 	}
 	f(doc)
+}
+
+func harvest(doc *html.Node, id string, tbl *data.Tables) *data.Harvest {
+	var h = new(data.Harvest)
+	//w fills up in loop then gives to rw.AddWeek()
+	var f func(*html.Node)
+	f = func(n *html.Node) {
+		if n.Type == html.ElementNode {
+			for _, a := range n.Attr {
+				if a.Key == "class" && a.Val == "statistic_box active" {
+
+					key := n.FirstChild.NextSibling.NextSibling.FirstChild.Data
+					val := n.FirstChild.NextSibling.FirstChild.Data
+
+					switch key {
+					case "Harvest":
+						h.WeekID = val
+					case "Bud wet weight":
+						h.WetWeight = val
+					case "Bud dry weight":
+						h.DryWeight = val
+					case "Number of plants harvested":
+						h.AmountPlants = val
+					case "Grow Room size":
+						h.GrowRoomSize = val
+					}
+				}
+			}
+		}
+		for c := n.FirstChild; c != nil; c = c.NextSibling {
+			f(c)
+		}
+	}
+	f(doc)
+	var rh = new(data.Harvest)
+	rh.AddHarvest(id, h.WeekID, h.WetWeight, h.DryWeight, h.AmountPlants, h.GrowRoomSize, tbl)
+	return rh
 }
 
 func compileDiaryWeek(weekHTML string, id string, w TempWeek, tbl *data.Tables) {
@@ -73,14 +127,16 @@ func compileDiaryWeek(weekHTML string, id string, w TempWeek, tbl *data.Tables) 
 		fmt.Println("Germination..")
 	case "0":
 		fmt.Println("Veg..")
-		params(doc, id, tbl)
-		ferts(doc, id, tbl)
+		//dislike return
+		wID := week(doc, id, tbl)
+		ferts(doc, id, tbl, wID.Week)
 	case "1":
 		fmt.Println("Bloom..")
-		params(doc, id, tbl)
-		ferts(doc, id, tbl)
+		wID := week(doc, id, tbl)
+		ferts(doc, id, tbl, wID.Week)
 	case "2":
-		fmt.Println("Harvest")
+		fmt.Println("Harvest..")
+		harvest(doc, id, tbl)
 	}
 
 }
