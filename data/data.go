@@ -52,17 +52,17 @@ type Breeder struct {
 
 type Week struct {
 	ID        string
-	Week      string
-	WType     string
-	Height    string
-	TempDay   string
-	TempNight string
-	Humidity  string
-	PotSize   string
-	Water     string
-	PH        string
-	LightS    string
-	TDS       string
+	Week      string //int
+	WType     string //string
+	Height    string //float64
+	TempDay   string //float64
+	TempNight string //float64
+	Humidity  string //float64
+	PotSize   string //float64
+	Water     string //float64
+	PH        string //float64
+	LightS    string //int
+	TDS       string //float64
 }
 
 func (w *Week) AddWeek(
@@ -93,7 +93,19 @@ func (w *Week) AddWeek(
 	w.LightS = lights
 	w.TDS = tds
 	tbl.TblWeek = append(tbl.TblWeek, *w)
-	fmt.Printf("addWeek --> w.ID: %v w.WType: %v w.Week: %v w.Height: %v w.TempDay: %v w.TempNight: %v w.Humidity: %v w.PotSize: %v w.Water: %v w.PH: %v w.LightS: %v w.TDS: %v\n", w.ID, w.WType, w.Week, w.Height, w.TempDay, w.TempNight, w.Humidity, w.PotSize, w.Water, w.PH, w.LightS, w.TDS)
+	fmt.Printf("addWeek --> w.ID: %v w.WType: %v w.Week: %v w.Height: %v w.TempDay: %v w.TempNight: %v w.Humidity: %v w.PotSize: %v w.Water: %v w.PH: %v w.LightS: %v w.TDS: %v\n",
+		w.ID,
+		c_NoSpace(w.WType),
+		c_WeekInt(w.Week),
+		c_StringFloat(w.Height),
+		c_StringFloat(w.TempDay),
+		c_StringFloat(w.TempNight),
+		c_WeekInt(w.Humidity),
+		c_StringFloat(w.PotSize),
+		c_StringFloat(w.Water),
+		c_StringFloat(w.PH),
+		c_WeekInt(w.LightS),
+		c_StringFloat(w.TDS))
 }
 
 type Fertilizer struct {
