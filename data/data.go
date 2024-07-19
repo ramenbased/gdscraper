@@ -63,6 +63,17 @@ type Week struct {
 	PH        string //float64
 	LightS    string //int
 	TDS       string //float64
+
+	//methods		 //bool
+	LST          bool
+	HST          bool
+	SoG          bool
+	ScrOG        bool
+	Topping      bool
+	FIMing       bool
+	MainLining   bool
+	Defoliation  bool
+	FromSeed1212 bool
 }
 
 func (w *Week) AddWeek(
@@ -78,6 +89,16 @@ func (w *Week) AddWeek(
 	ph string,
 	lights string,
 	tds string,
+	//methods
+	lst bool,
+	hst bool,
+	sog bool,
+	scrog bool,
+	topping bool,
+	fiming bool,
+	mainlining bool,
+	defoliation bool,
+	fromseed1212 bool,
 	tbl *Tables) {
 
 	w.ID = id
@@ -92,6 +113,16 @@ func (w *Week) AddWeek(
 	w.PH = ph
 	w.LightS = lights
 	w.TDS = tds
+	//methods
+	w.LST = lst
+	w.HST = hst
+	w.SoG = sog
+	w.ScrOG = scrog
+	w.Topping = topping
+	w.FIMing = fiming
+	w.MainLining = mainlining
+	w.Defoliation = defoliation
+	w.FromSeed1212 = fromseed1212
 	tbl.TblWeek = append(tbl.TblWeek, *w)
 	fmt.Printf("addWeek --> w.ID: %v w.WType: %v w.Week: %v w.Height: %v w.TempDay: %v w.TempNight: %v w.Humidity: %v w.PotSize: %v w.Water: %v w.PH: %v w.LightS: %v w.TDS: %v\n",
 		w.ID,
@@ -106,6 +137,7 @@ func (w *Week) AddWeek(
 		c_StringFloat(w.PH),
 		c_WeekInt(w.LightS),
 		c_StringFloat(w.TDS))
+	fmt.Printf("addWeek Methods --> w.LST: %v w.HST: %v w.SoG: %v w.ScrOG: %v w.Topping: %v w.FIMing: %v w.MainLining: %v w.Defoliation: %v w.FromSeed1212: %v\n", w.LST, w.HST, w.SoG, w.ScrOG, w.Topping, w.FIMing, w.MainLining, w.Defoliation, w.FromSeed1212)
 }
 
 type Fertilizer struct {

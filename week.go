@@ -16,10 +16,8 @@ func week(doc *html.Node, id string, tbl *data.Tables) *data.Week {
 		if n.Type == html.ElementNode {
 			for _, a := range n.Attr {
 				if a.Key == "class" && a.Val == "statistic_box active" {
-
 					key := n.FirstChild.NextSibling.NextSibling.FirstChild.Data
 					val := n.FirstChild.NextSibling.FirstChild.Data
-
 					switch key {
 					case "Height":
 						w.Height = val
@@ -47,6 +45,29 @@ func week(doc *html.Node, id string, tbl *data.Tables) *data.Week {
 						w.TDS = val
 					}
 				}
+				if a.Key == "class" && a.Val == "method" {
+					val := n.LastChild.FirstChild.LastChild.Data
+					switch val {
+					case "LST":
+						w.LST = true
+					case "HST":
+						w.HST = true
+					case "SoG":
+						w.SoG = true
+					case "ScrOG":
+						w.ScrOG = true
+					case "Topping":
+						w.Topping = true
+					case "FIMing":
+						w.FIMing = true
+					case "Main-Lining":
+						w.MainLining = true
+					case "Defoliation":
+						w.Defoliation = true
+					case "12-12 From Seed":
+						w.FromSeed1212 = true
+					}
+				}
 			}
 		}
 		for c := n.FirstChild; c != nil; c = c.NextSibling {
@@ -55,7 +76,7 @@ func week(doc *html.Node, id string, tbl *data.Tables) *data.Week {
 	}
 	f(doc)
 	var rw = new(data.Week)
-	rw.AddWeek(id, w.Week, w.WType, w.Height, w.TempDay, w.TempNight, w.Humidity, w.PotSize, w.Water, w.PH, w.LightS, w.TDS, tbl)
+	rw.AddWeek(id, w.Week, w.WType, w.Height, w.TempDay, w.TempNight, w.Humidity, w.PotSize, w.Water, w.PH, w.LightS, w.TDS, w.LST, w.HST, w.SoG, w.ScrOG, w.Topping, w.FIMing, w.MainLining, w.Defoliation, w.FromSeed1212, tbl)
 	return rw
 }
 
