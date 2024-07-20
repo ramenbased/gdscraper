@@ -145,15 +145,17 @@ type Fertilizer struct {
 	WeekID string
 	Name   string
 	Amount string //TODO: xx.x ml/L and why gallons after login scrape?? float??
+	Href   string
 }
 
-func (f *Fertilizer) AddFert(id string, wID string, name string, amount string, tbl *Tables) {
+func (f *Fertilizer) AddFert(id string, wID string, name string, amount string, href string, tbl *Tables) {
 	f.ID = id
 	f.WeekID = wID
 	f.Name = name
 	f.Amount = amount
+	f.Href = href
 	tbl.TblFertilizer = append(tbl.TblFertilizer, *f)
-	fmt.Printf("addFert --> f.ID: %v f.weekID: %v f.Name: %v f.Amount: %v\n", f.ID, f.WeekID, f.Name, f.Amount)
+	fmt.Printf("addFert --> f.ID: %v f.weekID: %v f.Name: %v f.Amount: %v f.Href: %v\n", f.ID, f.WeekID, f.Name, f.Amount, f.Href)
 }
 
 type Nutrients struct {

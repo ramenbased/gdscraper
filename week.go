@@ -89,7 +89,16 @@ func ferts(doc *html.Node, id string, tbl *data.Tables, weekID string) {
 					var f = new(data.Fertilizer)
 					name := n.FirstChild.NextSibling.FirstChild.FirstChild.Data
 					amount := n.FirstChild.NextSibling.NextSibling.NextSibling.FirstChild.Data
-					f.AddFert(id, weekID, name, amount, tbl)
+
+					//href for fert research help
+					href := ""
+					for _, a := range n.Attr {
+						if a.Key == "href" {
+							href = a.Val
+						}
+					}
+
+					f.AddFert(id, weekID, name, amount, href, tbl)
 				}
 			}
 		}

@@ -54,6 +54,51 @@ func compileDiaryItems(itemsHTML string, diaryURL string, tbl *data.Tables) {
 		}
 	}
 	f(doc)
+
+	/* TODO: dont scrape lights?..
+	var f2 func(*html.Node)
+	f2 = func(n *html.Node) {
+		if n.Type == html.ElementNode {
+			for _, a := range n.Attr {
+				if a.Key == "class" && a.Val == "faza faza_0" {
+					if n.FirstChild.Data == "VEG" {
+						model := n.Parent.NextSibling.FirstChild.FirstChild.Data
+						Obrand := ""
+						if n.Parent.NextSibling.LastChild.FirstChild.Type == html.CommentNode {
+							//known brand
+							brand = n.Parent.NextSibling.LastChild.LastChild.FirstChild.Data
+						}
+						if n.Parent.NextSibling.LastChild.FirstChild.Type == html.TextNode {
+							//custom brand
+							brand = n.Parent.NextSibling.LastChild.FirstChild.Data
+						}
+						fmt.Println(model, "-", brand)
+					}
+				}
+				if a.Key == "class" && a.Val == "faza faza_1" {
+					if n.FirstChild.Data == "FLO" {
+						model := n.Parent.NextSibling.FirstChild.FirstChild.Data
+						brand := ""
+						if n.Parent.NextSibling.LastChild.FirstChild.Type == html.CommentNode {
+							//known brand
+							brand = n.Parent.NextSibling.LastChild.LastChild.FirstChild.Data
+						}
+						if n.Parent.NextSibling.LastChild.FirstChild.Type == html.TextNode {
+							//custom brand
+							brand = n.Parent.NextSibling.LastChild.FirstChild.Data
+						}
+						fmt.Println(model, "-", brand)
+					}
+				}
+			}
+		}
+		for c := n.FirstChild; c != nil; c = c.NextSibling {
+			f2(c)
+		}
+	}
+	f2(doc)
+	*/
+
 }
 
 func compileWeekOverview(weeksHTML string) *TempWeeks {
@@ -175,9 +220,9 @@ func main() {
 	//userDiariesList := getUserDiariesListHTML(ctx, "royal-queen-seeds/northern-light")
 	//diariesListURLs := compileUserDiariesList(userDiariesList)
 
-	var diariesListURLs = []string{"/diaries/209445-zamnesia-seeds-x-10th-anniversary-grow-journal-by-schnabeldino"} //random test
+	//var diariesListURLs = []string{"/diaries/209445-zamnesia-seeds-x-10th-anniversary-grow-journal-by-schnabeldino"} //random test
 	//var diariesListURLs = []string{"/diaries/149912-grow-journal-by-madebyfrancesco"} //multiple soils
 
-	//var diariesListURLs = []string{"/diaries/213233-royal-queen-seeds-northern-light-grow-journal-by-eigenheit"}
+	var diariesListURLs = []string{"/diaries/213233-royal-queen-seeds-northern-light-grow-journal-by-eigenheit", "/diaries/209445-zamnesia-seeds-x-10th-anniversary-grow-journal-by-schnabeldino"}
 	getUserDiary(ctx, diariesListURLs, tbl)
 }
