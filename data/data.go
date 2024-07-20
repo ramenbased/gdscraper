@@ -26,7 +26,7 @@ func (d *Diary) AddDiary(id string, URL string, roomType string, tbl *Tables) {
 	d.URL = URL
 	d.Environment = roomType
 	tbl.TblDiary = append(tbl.TblDiary, *d)
-	log.Printf("addDiary --> d.ID: %v d.Environment: %v d.URL: %v\n", d.ID, d.Environment, d.URL)
+	log.Printf("addDiary --> d.ID: %v d.Environment: %v d.URL: %v\n", c_NoSpace(d.ID), c_NoSpace(d.Environment), c_NoSpace(d.URL))
 }
 
 type Soil struct {
@@ -40,7 +40,7 @@ func (s *Soil) AddSoil(id string, soil string, percent string, tbl *Tables) {
 	s.Type = soil
 	s.Percentage = percent
 	tbl.TblSoil = append(tbl.TblSoil, *s)
-	log.Printf("addSoil --> s.ID: %v s.Type: %v s.Percentage: %v\n", s.ID, s.Type, s.Percentage)
+	log.Printf("addSoil --> s.ID: %v s.Type: %v s.Percentage: %v\n", c_NoSpace(s.ID), c_NoSpace(s.Type), c_WeekInt(s.Percentage))
 }
 
 // TODO: Breeder/Strain how to data structure lmfao
@@ -154,7 +154,7 @@ func (f *Fertilizer) AddFert(id string, wID string, name string, amount string, 
 	f.Amount = amount
 	f.Href = href
 	tbl.TblFertilizer = append(tbl.TblFertilizer, *f)
-	log.Printf("addFert --> f.ID: %v f.weekID: %v f.Name: %v f.Amount: %v f.Href: %v\n", f.ID, c_WeekInt(f.WeekID), f.Name, f.Amount, f.Href)
+	log.Printf("addFert --> f.ID: %v f.weekID: %v f.Name: %v f.Amount: %v f.Href: %v\n", c_NoSpace(f.ID), c_WeekInt(f.WeekID), f.Name, c_FertAmount(f.Amount), f.Href)
 }
 
 type Nutrients struct {
@@ -183,5 +183,5 @@ func (h *Harvest) AddHarvest(id string, wID string, wetWeight string, dryWeight 
 	h.AmountPlants = amountPlants
 	h.GrowRoomSize = growRoomSize
 	tbl.TblHarvest = append(tbl.TblHarvest, *h)
-	log.Printf("addHarvest --> h.ID: %v h.WeekID: %v h.WetWeight: %v h.DryWeight: %v h.AmountPlants: %v h.GrowRoomSize: %v\n", h.ID, h.WeekID, h.WetWeight, h.DryWeight, h.AmountPlants, h.GrowRoomSize)
+	log.Printf("addHarvest --> h.ID: %v h.WeekID: %v h.WetWeight: %v h.DryWeight: %v h.AmountPlants: %v h.GrowRoomSize: %v\n", c_NoSpace(h.ID), c_WeekInt(h.WeekID), c_StringFloat(h.WetWeight), c_StringFloat(h.DryWeight), c_WeekInt(h.AmountPlants), c_StringFloat(h.GrowRoomSize))
 }

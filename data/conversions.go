@@ -37,12 +37,30 @@ func c_WeekInt(s string) any {
 	return i
 }
 
+func c_FertAmount(s string) any {
+	r, err := regexp.Compile("\\d{1,}\\.\\d{1,}|\\d{1,}")
+	Er(err)
+	f, err := strconv.ParseFloat(r.FindString(s), 64)
+	if err != nil {
+		return emptyString(s)
+	}
+	return f
+}
+
 func c_StringFloat(s string) any {
 	rs := strings.TrimSpace(s)
 	f, err := strconv.ParseFloat(rs, 64)
 	if err != nil {
-		//TODO: return sql.Null something
 		return emptyString(s)
 	}
 	return f
+}
+
+func c_StringInt(s string) any {
+	rs := strings.TrimSpace(s)
+	i, err := strconv.Atoi(rs)
+	if err != nil {
+		return emptyString(s)
+	}
+	return i
 }

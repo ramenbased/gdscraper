@@ -211,10 +211,10 @@ func main() {
 	defer f.Close()
 	logstd := io.MultiWriter(os.Stdout, f)
 	log.SetOutput(logstd)
-	log.Printf("@@@ START LOG @@@")
+	log.Printf("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ START LOG\n")
 
 	ctx, cancel, err := cu.New(cu.NewConfig(
-		//cu.WithHeadless(),
+		//cu.WithHeadless()
 		cu.WithChromeFlags(chromedp.WindowSize(600, 800)),
 	))
 	if err != nil {
@@ -232,6 +232,6 @@ func main() {
 	//var diariesListURLs = []string{"/diaries/209445-zamnesia-seeds-x-10th-anniversary-grow-journal-by-schnabeldino"} //random test
 	//var diariesListURLs = []string{"/diaries/149912-grow-journal-by-madebyfrancesco"} //multiple soils
 
-	var diariesListURLs = []string{"/diaries/213233-royal-queen-seeds-northern-light-grow-journal-by-eigenheit", "/diaries/209445-zamnesia-seeds-x-10th-anniversary-grow-journal-by-schnabeldino"}
+	var diariesListURLs = []string{"/diaries/171366-grow-journal-by-growwithflow/week/974789", "/diaries/213233-royal-queen-seeds-northern-light-grow-journal-by-eigenheit", "/diaries/209445-zamnesia-seeds-x-10th-anniversary-grow-journal-by-schnabeldino"}
 	getUserDiary(ctx, diariesListURLs, tbl)
 }
