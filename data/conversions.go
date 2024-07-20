@@ -15,7 +15,7 @@ func Er(err error) {
 
 func emptyString(s string) string {
 	if s == "" {
-		return "NULL"
+		return ""
 	}
 	if s != "" {
 		log.Fatalf("emptyString in data conversions Error cus of this shit: %v", s)

@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"strings"
 	"time"
@@ -55,7 +54,7 @@ func compileUserDiariesList(outer string) []string {
 		}
 	}
 	f(doc)
-	fmt.Printf("Found %v User Diaries \n", len(rv))
+	log.Printf("Found %v User Diaries \n", len(rv))
 	return rv
 }
 

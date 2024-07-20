@@ -1,8 +1,8 @@
 package main
 
 import (
-	"fmt"
 	"gdscraper/data"
+	"log"
 	"strings"
 
 	"golang.org/x/net/html"
@@ -154,18 +154,18 @@ func compileDiaryWeek(weekHTML string, id string, w TempWeek, tbl *data.Tables) 
 	}
 	switch w.WeekType {
 	case "-1":
-		fmt.Println("Germination..")
+		log.Println("Germination..")
 	case "0":
-		fmt.Println("Veg..")
+		log.Println("Veg..")
 		//dislike return
 		wID := week(doc, id, tbl)
 		ferts(doc, id, tbl, wID.Week)
 	case "1":
-		fmt.Println("Bloom..")
+		log.Println("Bloom..")
 		wID := week(doc, id, tbl)
 		ferts(doc, id, tbl, wID.Week)
 	case "2":
-		fmt.Println("Harvest..")
+		log.Println("Harvest..")
 		harvest(doc, id, tbl)
 	}
 

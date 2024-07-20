@@ -2,9 +2,10 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"gdscraper/data"
+	"io"
 	"log"
+	"os"
 	"strings"
 	"time"
 
@@ -15,13 +16,13 @@ import (
 
 func Er(err error) {
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 	}
 }
 
 func replaceNilNodeData(n *html.Node) string {
 	if n == nil {
-		return "NULL" //TODO: type?
+		return "" //prev NULL
 	} else {
 		return n.Data
 	}
@@ -119,7 +120,6 @@ func compileWeekOverview(weeksHTML string) *TempWeeks {
 							w.WeekType = a.Val
 							w.Link = a2.Val
 							rv.w = append(rv.w, *w)
-							//fmt.Printf("Weektype: %v %v \n", a.Val, a2.Val)
 						}
 					}
 				}
@@ -150,10 +150,10 @@ func sanityWeekOverview(weeks *TempWeeks) *TempWeeks {
 	}
 	//TODO FINAL RULESET!
 	if veg >= 2 && bloom >= 4 && harvest < 2 {
-		fmt.Printf("internal.. sanity check passed.. veg: %v bloom: %v harvest: %v\n", veg, bloom, harvest)
+		log.Printf("internal.. sanity check passed.. veg: %v bloom: %v harvest: %v\n", veg, bloom, harvest)
 		weeks.sanity = true
 	} else {
-		fmt.Println("internal.. sanity check not passed, skip..")
+		log.Println("internal.. sanity check not passed, skip..")
 	}
 	return weeks
 }
@@ -183,7 +183,7 @@ func getUserDiary(ctx context.Context, URLs []string, tbl *data.Tables) {
 
 					for _, w := range weeks.w {
 						var diaryHTML string
-						fmt.Println("internal.. ", w.Link, w.WeekType)
+						log.Println("internal.. ", w.Link, w.WeekType)
 						if err := chromedp.Run(ctx,
 							chromedp.Navigate("https://growdiaries.com"+w.Link),
 							chromedp.Sleep(10*time.Second),
@@ -204,6 +204,15 @@ func getUserDiary(ctx context.Context, URLs []string, tbl *data.Tables) {
 }
 
 func main() {
+	f, err := os.OpenFile("logfile", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	if err != nil {
+		log.Fatalf("error opening file: %v", err)
+	}
+	defer f.Close()
+	logstd := io.MultiWriter(os.Stdout, f)
+	log.SetOutput(logstd)
+	log.Printf("@@@ START LOG @@@")
+
 	ctx, cancel, err := cu.New(cu.NewConfig(
 		//cu.WithHeadless(),
 		cu.WithChromeFlags(chromedp.WindowSize(600, 800)),

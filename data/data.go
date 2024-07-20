@@ -1,7 +1,7 @@
 package data
 
 import (
-	"fmt"
+	"log"
 )
 
 // --- Temp DB
@@ -26,8 +26,7 @@ func (d *Diary) AddDiary(id string, URL string, roomType string, tbl *Tables) {
 	d.URL = URL
 	d.Environment = roomType
 	tbl.TblDiary = append(tbl.TblDiary, *d)
-	fmt.Printf("addDiary --> d.ID: %v d.Environment: %v d.URL: %v\n", d.ID, d.Environment, d.URL)
-
+	log.Printf("addDiary --> d.ID: %v d.Environment: %v d.URL: %v\n", d.ID, d.Environment, d.URL)
 }
 
 type Soil struct {
@@ -41,7 +40,7 @@ func (s *Soil) AddSoil(id string, soil string, percent string, tbl *Tables) {
 	s.Type = soil
 	s.Percentage = percent
 	tbl.TblSoil = append(tbl.TblSoil, *s)
-	fmt.Printf("addSoil --> s.ID: %v s.Type: %v s.Percentage: %v\n", s.ID, s.Type, s.Percentage)
+	log.Printf("addSoil --> s.ID: %v s.Type: %v s.Percentage: %v\n", s.ID, s.Type, s.Percentage)
 }
 
 // TODO: Breeder/Strain how to data structure lmfao
@@ -124,7 +123,7 @@ func (w *Week) AddWeek(
 	w.Defoliation = defoliation
 	w.FromSeed1212 = fromseed1212
 	tbl.TblWeek = append(tbl.TblWeek, *w)
-	fmt.Printf("addWeek --> w.ID: %v w.WType: %v w.Week: %v w.Height: %v w.TempDay: %v w.TempNight: %v w.Humidity: %v w.PotSize: %v w.Water: %v w.PH: %v w.LightS: %v w.TDS: %v\n",
+	log.Printf("addWeek --> w.ID: %v w.WType: %v w.Week: %v w.Height: %v w.TempDay: %v w.TempNight: %v w.Humidity: %v w.PotSize: %v w.Water: %v w.PH: %v w.LightS: %v w.TDS: %v\n",
 		w.ID,
 		c_NoSpace(w.WType),
 		c_WeekInt(w.Week),
@@ -137,7 +136,7 @@ func (w *Week) AddWeek(
 		c_StringFloat(w.PH),
 		c_WeekInt(w.LightS),
 		c_StringFloat(w.TDS))
-	fmt.Printf("addWeek Methods --> w.LST: %v w.HST: %v w.SoG: %v w.ScrOG: %v w.Topping: %v w.FIMing: %v w.MainLining: %v w.Defoliation: %v w.FromSeed1212: %v\n", w.LST, w.HST, w.SoG, w.ScrOG, w.Topping, w.FIMing, w.MainLining, w.Defoliation, w.FromSeed1212)
+	log.Printf("addWeek Methods --> w.LST: %v w.HST: %v w.SoG: %v w.ScrOG: %v w.Topping: %v w.FIMing: %v w.MainLining: %v w.Defoliation: %v w.FromSeed1212: %v\n", w.LST, w.HST, w.SoG, w.ScrOG, w.Topping, w.FIMing, w.MainLining, w.Defoliation, w.FromSeed1212)
 }
 
 type Fertilizer struct {
@@ -155,7 +154,7 @@ func (f *Fertilizer) AddFert(id string, wID string, name string, amount string, 
 	f.Amount = amount
 	f.Href = href
 	tbl.TblFertilizer = append(tbl.TblFertilizer, *f)
-	fmt.Printf("addFert --> f.ID: %v f.weekID: %v f.Name: %v f.Amount: %v f.Href: %v\n", f.ID, f.WeekID, f.Name, f.Amount, f.Href)
+	log.Printf("addFert --> f.ID: %v f.weekID: %v f.Name: %v f.Amount: %v f.Href: %v\n", f.ID, c_WeekInt(f.WeekID), f.Name, f.Amount, f.Href)
 }
 
 type Nutrients struct {
@@ -184,5 +183,5 @@ func (h *Harvest) AddHarvest(id string, wID string, wetWeight string, dryWeight 
 	h.AmountPlants = amountPlants
 	h.GrowRoomSize = growRoomSize
 	tbl.TblHarvest = append(tbl.TblHarvest, *h)
-	fmt.Printf("addHarvest --> h.ID: %v h.WeekID: %v h.WetWeight: %v h.DryWeight: %v h.AmountPlants: %v h.GrowRoomSize: %v\n", h.ID, h.WeekID, h.WetWeight, h.DryWeight, h.AmountPlants, h.GrowRoomSize)
+	log.Printf("addHarvest --> h.ID: %v h.WeekID: %v h.WetWeight: %v h.DryWeight: %v h.AmountPlants: %v h.GrowRoomSize: %v\n", h.ID, h.WeekID, h.WetWeight, h.DryWeight, h.AmountPlants, h.GrowRoomSize)
 }
