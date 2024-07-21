@@ -64,3 +64,8 @@ func c_StringInt(s string) any {
 	}
 	return i
 }
+
+func c_isPhoto(s string) bool {
+	rv := strings.Contains(strings.ToLower(s), "auto")
+	return rv
+}

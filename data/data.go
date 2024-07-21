@@ -21,6 +21,7 @@ type Diary struct {
 	URL         string //string
 	Seedbank    string //string
 	Strain      string //string
+	IsPhoto     bool   //bool
 }
 
 func (d *Diary) AddDiary(id string, URL string, roomType string, seedbank string, strain string, tbl *Tables) {
@@ -29,8 +30,9 @@ func (d *Diary) AddDiary(id string, URL string, roomType string, seedbank string
 	d.Environment = roomType
 	d.Seedbank = seedbank
 	d.Strain = strain
+	d.IsPhoto = c_isPhoto(strain)
 	tbl.TblDiary = append(tbl.TblDiary, *d)
-	log.Printf("addDiary --> d.ID: %v d.Environment: %v d.URL: %v d.Seedbank: %v d.Strain: %v\n", c_NoSpace(d.ID), c_NoSpace(d.Environment), c_NoSpace(d.URL), c_NoSpace(seedbank), c_NoSpace(strain))
+	log.Printf("addDiary --> d.ID: %v d.Environment: %v d.URL: %v d.Seedbank: %v d.Strain: %v d.IsPhoto: %v\n", c_NoSpace(d.ID), c_NoSpace(d.Environment), c_NoSpace(d.URL), c_NoSpace(seedbank), c_NoSpace(strain), d.IsPhoto)
 }
 
 type Soil struct {

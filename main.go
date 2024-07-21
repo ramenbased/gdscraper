@@ -63,7 +63,7 @@ func compileDiaryItems(itemsHTML string, diaryURL string, seedbank string, strai
 		if n.Type == html.ElementNode {
 			for _, a := range n.Attr {
 				if a.Key == "class" && a.Val == "faza faza_0" {
-					if n.FirstChild.Data == "VEG" {
+					if n.FirshChild.Data == "VEG" {
 						model := n.Parent.NextSibling.FirstChild.FirstChild.Data
 						Obrand := ""
 						if n.Parent.NextSibling.LastChild.FirstChild.Type == html.CommentNode {
@@ -163,6 +163,14 @@ func getUserDiary(ctx context.Context, URLs []string, seedbank string, strain st
 	for _, diaryURL := range URLs {
 
 		if err := chromedp.Run(ctx,
+			//UNIT CHECK
+			/*
+				chromedp.Navigate("https://growdiaries.com/diaries/211997-doctor-039-s-choice-devotchka-grow-journal-by-piuswaxis"),
+				chromedp.Sleep(15*time.Second),
+				chromedp.Navigate("https://growdiaries.com/diaries/211997-doctor-039-s-choice-devotchka-grow-journal-by-piuswaxis/week/1196983"),
+				chromedp.Sleep(15*time.Second),
+			*/
+
 			chromedp.Navigate("https://growdiaries.com"+diaryURL),
 			chromedp.Sleep(5*time.Second),
 			chromedp.OuterHTML(".report_items.report_seeds", &itemsHTML),
@@ -222,9 +230,15 @@ func main() {
 	var tbl = new(data.Tables)
 
 	//login(ctx, "https://growdiaries.com/auth/signin")
+	//harvest unit check: /diaries/211997-doctor-039-s-choice-devotchka-grow-journal-by-piuswaxis
+	//week unit check: /diaries/211997-doctor-039-s-choice-devotchka-grow-journal-by-piuswaxis/week/1196983
 
-	var seedbank = "royal-queen-seeds"
-	var strain = "northern-light"
+	var seedbank = "fastbuds"
+	var strain = "gorilla-cookies-auto"
+	/*
+		var seedbank = "royal-queen-seeds"
+		var strain = "northern-light"
+	*/
 	userDiariesList := getUserDiariesListHTML(ctx, seedbank+"/"+strain)
 	diariesListURLs := compileUserDiariesList(userDiariesList)
 
