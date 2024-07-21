@@ -168,5 +168,4 @@ func compileDiaryWeek(weekHTML string, id string, w TempWeek, tbl *data.Tables) 
 		log.Println("Harvest..")
 		harvest(doc, id, tbl)
 	}
-
 }

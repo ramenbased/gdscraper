@@ -16,23 +16,27 @@ type Tables struct {
 
 // --- Main
 type Diary struct {
-	ID          string //filled - TODO: not string maybe FOR ALL!!
-	Environment string //filled
-	URL         string //filled
+	ID          string //string
+	Environment string //string
+	URL         string //string
+	Seedbank    string //string
+	Strain      string //string
 }
 
-func (d *Diary) AddDiary(id string, URL string, roomType string, tbl *Tables) {
+func (d *Diary) AddDiary(id string, URL string, roomType string, seedbank string, strain string, tbl *Tables) {
 	d.ID = id
 	d.URL = URL
 	d.Environment = roomType
+	d.Seedbank = seedbank
+	d.Strain = strain
 	tbl.TblDiary = append(tbl.TblDiary, *d)
-	log.Printf("addDiary --> d.ID: %v d.Environment: %v d.URL: %v\n", c_NoSpace(d.ID), c_NoSpace(d.Environment), c_NoSpace(d.URL))
+	log.Printf("addDiary --> d.ID: %v d.Environment: %v d.URL: %v d.Seedbank: %v d.Strain: %v\n", c_NoSpace(d.ID), c_NoSpace(d.Environment), c_NoSpace(d.URL), c_NoSpace(seedbank), c_NoSpace(strain))
 }
 
 type Soil struct {
-	ID         string
-	Type       string
-	Percentage string
+	ID         string //string
+	Type       string //string
+	Percentage string //int
 }
 
 func (s *Soil) AddSoil(id string, soil string, percent string, tbl *Tables) {
@@ -50,7 +54,7 @@ type Breeder struct {
 }
 
 type Week struct {
-	ID        string
+	ID        string //string
 	Week      string //int
 	WType     string //string
 	Height    string //float64
@@ -140,11 +144,11 @@ func (w *Week) AddWeek(
 }
 
 type Fertilizer struct {
-	ID     string
-	WeekID string
-	Name   string
-	Amount string //TODO: xx.x ml/L and why gallons after login scrape?? float??
-	Href   string
+	ID     string //string
+	WeekID string //int
+	Name   string //string
+	Amount string //float64
+	Href   string //string
 }
 
 func (f *Fertilizer) AddFert(id string, wID string, name string, amount string, href string, tbl *Tables) {
@@ -157,6 +161,7 @@ func (f *Fertilizer) AddFert(id string, wID string, name string, amount string, 
 	log.Printf("addFert --> f.ID: %v f.weekID: %v f.Name: %v f.Amount: %v f.Href: %v\n", c_NoSpace(f.ID), c_WeekInt(f.WeekID), f.Name, c_FertAmount(f.Amount), f.Href)
 }
 
+/*
 type Nutrients struct {
 	Name string
 	N    float64
@@ -165,14 +170,15 @@ type Nutrients struct {
 	Cal  float64
 	Mag  float64
 }
+*/
 
 type Harvest struct {
-	ID           string
-	WeekID       string
-	WetWeight    string
-	DryWeight    string
-	AmountPlants string
-	GrowRoomSize string
+	ID           string //string
+	WeekID       string //int
+	WetWeight    string //float64
+	DryWeight    string //float64
+	AmountPlants string //int
+	GrowRoomSize string //float64
 }
 
 func (h *Harvest) AddHarvest(id string, wID string, wetWeight string, dryWeight string, amountPlants string, growRoomSize string, tbl *Tables) {

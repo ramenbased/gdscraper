@@ -28,11 +28,11 @@ func replaceNilNodeData(n *html.Node) string {
 	}
 }
 
-func compileDiaryItems(itemsHTML string, diaryURL string, tbl *data.Tables) {
-
+func compileDiaryItems(itemsHTML string, diaryURL string, seedbank string, strain string, tbl *data.Tables) {
 	var sr = strings.NewReader(itemsHTML)
 	var doc, err = html.Parse(sr)
 	Er(err)
+	var d = new(data.Diary)
 
 	var f func(*html.Node)
 	f = func(n *html.Node) {
@@ -41,8 +41,7 @@ func compileDiaryItems(itemsHTML string, diaryURL string, tbl *data.Tables) {
 				if a.Key == "class" && a.Val == "info" {
 					switch n.LastChild.FirstChild.Data {
 					case "Room Type":
-						var diary = new(data.Diary)
-						diary.AddDiary(regexGetID(diaryURL), diaryURL, n.FirstChild.FirstChild.Data, tbl)
+						d.Environment = n.FirstChild.FirstChild.Data
 					case "Grow medium":
 						var soils = new(data.Soil)
 						soils.AddSoil(regexGetID(diaryURL), n.FirstChild.FirstChild.Data, replaceNilNodeData(n.PrevSibling.LastChild.FirstChild), tbl)
@@ -55,6 +54,8 @@ func compileDiaryItems(itemsHTML string, diaryURL string, tbl *data.Tables) {
 		}
 	}
 	f(doc)
+	var rd = new(data.Diary)
+	rd.AddDiary(regexGetID(diaryURL), diaryURL, d.Environment, seedbank, strain, tbl)
 
 	/* TODO: dont scrape lights?..
 	var f2 func(*html.Node)
@@ -99,7 +100,6 @@ func compileDiaryItems(itemsHTML string, diaryURL string, tbl *data.Tables) {
 	}
 	f2(doc)
 	*/
-
 }
 
 func compileWeekOverview(weeksHTML string) *TempWeeks {
@@ -134,10 +134,7 @@ func compileWeekOverview(weeksHTML string) *TempWeeks {
 }
 
 func sanityWeekOverview(weeks *TempWeeks) *TempWeeks {
-	//must have harvest.. no continuity check only amount..
-
 	veg, bloom, harvest := 0, 0, 0
-
 	for _, w := range weeks.w {
 		switch w.WeekType {
 		case "0":
@@ -159,7 +156,7 @@ func sanityWeekOverview(weeks *TempWeeks) *TempWeeks {
 }
 
 // Actual Weeks
-func getUserDiary(ctx context.Context, URLs []string, tbl *data.Tables) {
+func getUserDiary(ctx context.Context, URLs []string, seedbank string, strain string, tbl *data.Tables) {
 	var itemsHTML string
 	var weeksHTML string
 	//iterate over URLs
@@ -179,7 +176,7 @@ func getUserDiary(ctx context.Context, URLs []string, tbl *data.Tables) {
 
 				if saneWeeks.sanity == true {
 					//start data
-					compileDiaryItems(itemsHTML, diaryURL, tbl)
+					compileDiaryItems(itemsHTML, diaryURL, seedbank, strain, tbl)
 
 					for _, w := range weeks.w {
 						var diaryHTML string
@@ -226,12 +223,14 @@ func main() {
 
 	//login(ctx, "https://growdiaries.com/auth/signin")
 
-	//userDiariesList := getUserDiariesListHTML(ctx, "royal-queen-seeds/northern-light")
-	//diariesListURLs := compileUserDiariesList(userDiariesList)
+	var seedbank = "royal-queen-seeds"
+	var strain = "northern-light"
+	userDiariesList := getUserDiariesListHTML(ctx, seedbank+"/"+strain)
+	diariesListURLs := compileUserDiariesList(userDiariesList)
 
 	//var diariesListURLs = []string{"/diaries/209445-zamnesia-seeds-x-10th-anniversary-grow-journal-by-schnabeldino"} //random test
 	//var diariesListURLs = []string{"/diaries/149912-grow-journal-by-madebyfrancesco"} //multiple soils
 
-	var diariesListURLs = []string{"/diaries/171366-grow-journal-by-growwithflow/week/974789", "/diaries/213233-royal-queen-seeds-northern-light-grow-journal-by-eigenheit", "/diaries/209445-zamnesia-seeds-x-10th-anniversary-grow-journal-by-schnabeldino"}
-	getUserDiary(ctx, diariesListURLs, tbl)
+	//var diariesListURLs = []string{"/diaries/171366-grow-journal-by-growwithflow/week/974789", "/diaries/213233-royal-queen-seeds-northern-light-grow-journal-by-eigenheit", "/diaries/209445-zamnesia-seeds-x-10th-anniversary-grow-journal-by-schnabeldino"}
+	getUserDiary(ctx, diariesListURLs, seedbank, strain, tbl)
 }
