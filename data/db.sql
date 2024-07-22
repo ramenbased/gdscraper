@@ -1,5 +1,5 @@
 BEGIN;
-\c  database_name
+\c grow
 DROP TABLE IF EXISTS diary, soil, week, fertilizer, harvest;
 CREATE TABLE IF NOT EXISTS diary (
 	id 				int,
@@ -53,10 +53,10 @@ CREATE TABLE IF NOT EXISTS harvest (
 	amountPlants	int,
 	growRoomSize	double precision
 );
-\copy diary FROM 'diary.csv' WITH DELIMITER ',' NULL AS '';
-\copy soil FROM 'diary.csv' WITH DELIMITER ',' NULL AS '';
-\copy week FROM 'diary.csv' WITH DELIMITER ',' NULL AS '';
-\copy fertilizer FROM 'diary.csv' WITH DELIMITER ',' NULL AS '';
-\copy harvest FROM 'diary.csv' WITH DELIMITER ',' NULL AS '';
+copy diary FROM '/home/ramenbased/snek/gdscraper/data/output/diary.csv' WITH DELIMITER ',' NULL AS '';
+copy soil FROM 'diary.csv' WITH DELIMITER ',' NULL AS '';
+copy week FROM 'diary.csv' WITH DELIMITER ',' NULL AS '';
+copy fertilizer FROM 'diary.csv' WITH DELIMITER ',' NULL AS '';
+copy harvest FROM 'diary.csv' WITH DELIMITER ',' NULL AS '';
 COMMIT;
 

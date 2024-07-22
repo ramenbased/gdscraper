@@ -66,7 +66,7 @@ func getUserDiariesListHTML(ctx context.Context, strain string) string {
 		chromedp.Sleep(3*time.Second),
 		chromedp.ActionFunc(func(ctx context.Context) error {
 			//how many times scroll to load
-			for i := 0; i <= 1; i++ {
+			for i := 0; i <= 20; i++ {
 				chromedp.KeyEvent(kb.End).Do(ctx)
 				chromedp.Sleep(2 * time.Second).Do(ctx)
 			}

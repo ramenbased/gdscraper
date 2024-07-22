@@ -146,7 +146,7 @@ func sanityWeekOverview(weeks *TempWeeks) *TempWeeks {
 		}
 	}
 	//TODO FINAL RULESET!
-	if veg >= 2 && bloom >= 4 && harvest < 2 {
+	if veg >= 2 && bloom >= 4 && harvest == 1 {
 		log.Printf("internal.. sanity check passed.. veg: %v bloom: %v harvest: %v\n", veg, bloom, harvest)
 		weeks.sanity = true
 	} else {
@@ -164,12 +164,10 @@ func getUserDiary(ctx context.Context, URLs []string, seedbank string, strain st
 
 		if err := chromedp.Run(ctx,
 			//UNIT CHECK
-			/*
-				chromedp.Navigate("https://growdiaries.com/diaries/211997-doctor-039-s-choice-devotchka-grow-journal-by-piuswaxis"),
-				chromedp.Sleep(15*time.Second),
-				chromedp.Navigate("https://growdiaries.com/diaries/211997-doctor-039-s-choice-devotchka-grow-journal-by-piuswaxis/week/1196983"),
-				chromedp.Sleep(15*time.Second),
-			*/
+			chromedp.Navigate("https://growdiaries.com/diaries/211997-doctor-039-s-choice-devotchka-grow-journal-by-piuswaxis"),
+			chromedp.Sleep(15*time.Second),
+			chromedp.Navigate("https://growdiaries.com/diaries/211997-doctor-039-s-choice-devotchka-grow-journal-by-piuswaxis/week/1196983"),
+			chromedp.Sleep(15*time.Second),
 
 			chromedp.Navigate("https://growdiaries.com"+diaryURL),
 			chromedp.Sleep(5*time.Second),
@@ -209,6 +207,7 @@ func getUserDiary(ctx context.Context, URLs []string, seedbank string, strain st
 }
 
 func main() {
+	// LOG
 	f, err := os.OpenFile("logfile.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	if err != nil {
 		log.Fatalf("error opening file: %v", err)
@@ -218,6 +217,7 @@ func main() {
 	log.SetOutput(logstd)
 	log.Printf("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ START LOG\n")
 
+	// CRHOME
 	ctx, cancel, err := cu.New(cu.NewConfig(
 		//cu.WithHeadless()
 		cu.WithChromeFlags(chromedp.WindowSize(600, 800)),
@@ -227,18 +227,16 @@ func main() {
 	}
 	defer cancel()
 
+	//-------------------------------
 	var tbl = new(data.Tables)
 
-	//login(ctx, "https://growdiaries.com/auth/signin")
-	//harvest unit check: /diaries/211997-doctor-039-s-choice-devotchka-grow-journal-by-piuswaxis
-	//week unit check: /diaries/211997-doctor-039-s-choice-devotchka-grow-journal-by-piuswaxis/week/1196983
-
-	var seedbank = "fastbuds"
-	var strain = "gorilla-cookies-auto"
+	login(ctx, "https://growdiaries.com/auth/signin")
 	/*
-		var seedbank = "royal-queen-seeds"
-		var strain = "northern-light"
+		var seedbank = "fastbuds"
+		var strain = "gorilla-cookies-auto"
 	*/
+	var seedbank = "royal-queen-seeds"
+	var strain = "northern-light"
 	userDiariesList := getUserDiariesListHTML(ctx, seedbank+"/"+strain)
 	diariesListURLs := compileUserDiariesList(userDiariesList)
 
