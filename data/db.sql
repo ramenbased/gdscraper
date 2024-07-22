@@ -59,4 +59,3 @@ copy week FROM '/home/ramenbased/snek/gdscraper/data/output/week.csv' WITH DELIM
 copy fertilizer FROM '/home/ramenbased/snek/gdscraper/data/output/fertilizer.csv' WITH DELIMITER ',' NULL AS '';
 copy harvest FROM '/home/ramenbased/snek/gdscraper/data/output/harvest.csv' WITH DELIMITER ',' NULL AS '';
 COMMIT;
-

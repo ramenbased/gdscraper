@@ -128,10 +128,10 @@ func (w *Week) AddWeek(
 	w.Defoliation = defoliation
 	w.FromSeed1212 = fromseed1212
 	//tbl.TblWeek = append(tbl.TblWeek, *w)
-	log.Printf("addWeek --> w.ID: %v w.WType: %v w.Week: %v w.Height: %v w.TempDay: %v w.TempNight: %v w.Humidity: %v w.PotSize: %v w.Water: %v w.PH: %v w.LightS: %v w.TDS: %v\n",
+	log.Printf("addWeek --> w.ID: %v w.Week: %v w.WType: %v w.Height: %v w.TempDay: %v w.TempNight: %v w.Humidity: %v w.PotSize: %v w.Water: %v w.PH: %v w.LightS: %v w.TDS: %v\n",
 		c_StringInt(w.ID),
-		c_NoSpace(w.WType),
 		c_WeekInt(w.Week),
+		c_NoSpace(w.WType),
 		c_StringFloat(w.Height),
 		c_StringFloat(w.TempDay),
 		c_StringFloat(w.TempNight),
@@ -144,8 +144,8 @@ func (w *Week) AddWeek(
 	log.Printf("addWeek Methods --> w.LST: %v w.HST: %v w.SoG: %v w.ScrOG: %v w.Topping: %v w.FIMing: %v w.MainLining: %v w.Defoliation: %v w.FromSeed1212: %v\n", w.LST, w.HST, w.SoG, w.ScrOG, w.Topping, w.FIMing, w.MainLining, w.Defoliation, w.FromSeed1212)
 	line := fmt.Sprintf("%v,%v,%v,%v,%v,%v,%v,%v,%v,%v,%v,%v,%v,%v,%v,%v,%v,%v,%v,%v,%v\n",
 		c_StringInt(w.ID),
-		c_NoSpace(w.WType),
 		c_WeekInt(w.Week),
+		c_NoSpace(w.WType),
 		c_StringFloat(w.Height),
 		c_StringFloat(w.TempDay),
 		c_StringFloat(w.TempNight),
