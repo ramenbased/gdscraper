@@ -21,6 +21,11 @@ func login(ctx context.Context, url string) {
 		chromedp.MouseClickXY(165, 480),
 		chromedp.Sleep(5*time.Second),
 		chromedp.EvaluateAsDevTools("document.querySelector('.btn.primary').click()", nil),
+		chromedp.Sleep(10*time.Second),
+		//UNIT CHECK
+		chromedp.Navigate("https://growdiaries.com/diaries/211997-doctor-039-s-choice-devotchka-grow-journal-by-piuswaxis"),
+		chromedp.Sleep(15*time.Second),
+		chromedp.Navigate("https://growdiaries.com/diaries/211997-doctor-039-s-choice-devotchka-grow-journal-by-piuswaxis/week/1196983"),
 		chromedp.Sleep(15*time.Second),
 	); err != nil {
 		log.Fatal(err)

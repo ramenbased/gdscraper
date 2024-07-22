@@ -146,7 +146,7 @@ func sanityWeekOverview(weeks *TempWeeks) *TempWeeks {
 		}
 	}
 	//TODO FINAL RULESET!
-	if veg >= 2 && bloom >= 4 && harvest == 1 {
+	if veg >= 2 && bloom >= 4 && harvest <= 1 {
 		log.Printf("internal.. sanity check passed.. veg: %v bloom: %v harvest: %v\n", veg, bloom, harvest)
 		weeks.sanity = true
 	} else {
@@ -163,12 +163,6 @@ func getUserDiary(ctx context.Context, URLs []string, seedbank string, strain st
 	for _, diaryURL := range URLs {
 
 		if err := chromedp.Run(ctx,
-			//UNIT CHECK
-			chromedp.Navigate("https://growdiaries.com/diaries/211997-doctor-039-s-choice-devotchka-grow-journal-by-piuswaxis"),
-			chromedp.Sleep(15*time.Second),
-			chromedp.Navigate("https://growdiaries.com/diaries/211997-doctor-039-s-choice-devotchka-grow-journal-by-piuswaxis/week/1196983"),
-			chromedp.Sleep(15*time.Second),
-
 			chromedp.Navigate("https://growdiaries.com"+diaryURL),
 			chromedp.Sleep(5*time.Second),
 			chromedp.OuterHTML(".report_items.report_seeds", &itemsHTML),

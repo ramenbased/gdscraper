@@ -142,7 +142,7 @@ func (w *Week) AddWeek(
 		c_WeekInt(w.LightS),
 		c_StringFloat(w.TDS))
 	log.Printf("addWeek Methods --> w.LST: %v w.HST: %v w.SoG: %v w.ScrOG: %v w.Topping: %v w.FIMing: %v w.MainLining: %v w.Defoliation: %v w.FromSeed1212: %v\n", w.LST, w.HST, w.SoG, w.ScrOG, w.Topping, w.FIMing, w.MainLining, w.Defoliation, w.FromSeed1212)
-	line := fmt.Sprint("%v,%v,%v,%v,%v,%v,%v,%v,%v,%v,%v,%v,%v,%v,%v,%v,%v,%v,%v,%v,%v\n",
+	line := fmt.Sprintf("%v,%v,%v,%v,%v,%v,%v,%v,%v,%v,%v,%v,%v,%v,%v,%v,%v,%v,%v,%v,%v\n",
 		c_StringInt(w.ID),
 		c_NoSpace(w.WType),
 		c_WeekInt(w.Week),
@@ -155,7 +155,15 @@ func (w *Week) AddWeek(
 		c_StringFloat(w.PH),
 		c_WeekInt(w.LightS),
 		c_StringFloat(w.TDS),
-		w.LST, w.HST, w.SoG, w.ScrOG, w.Topping, w.FIMing, w.MainLining, w.Defoliation, w.FromSeed1212)
+		w.LST,
+		w.HST,
+		w.SoG,
+		w.ScrOG,
+		w.Topping,
+		w.FIMing,
+		w.MainLining,
+		w.Defoliation,
+		w.FromSeed1212)
 	Output("week.csv", line)
 }
 

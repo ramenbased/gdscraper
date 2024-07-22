@@ -54,9 +54,9 @@ CREATE TABLE IF NOT EXISTS harvest (
 	growRoomSize	double precision
 );
 copy diary FROM '/home/ramenbased/snek/gdscraper/data/output/diary.csv' WITH DELIMITER ',' NULL AS '';
-copy soil FROM 'diary.csv' WITH DELIMITER ',' NULL AS '';
-copy week FROM 'diary.csv' WITH DELIMITER ',' NULL AS '';
-copy fertilizer FROM 'diary.csv' WITH DELIMITER ',' NULL AS '';
-copy harvest FROM 'diary.csv' WITH DELIMITER ',' NULL AS '';
+copy soil FROM '/home/ramenbased/snek/gdscraper/data/output/soil.csv' WITH DELIMITER ',' NULL AS '';
+copy week FROM '/home/ramenbased/snek/gdscraper/data/output/week.csv' WITH DELIMITER ',' NULL AS '';
+copy fertilizer FROM '/home/ramenbased/snek/gdscraper/data/output/fertilizer.csv' WITH DELIMITER ',' NULL AS '';
+copy harvest FROM '/home/ramenbased/snek/gdscraper/data/output/harvest.csv' WITH DELIMITER ',' NULL AS '';
 COMMIT;
 
