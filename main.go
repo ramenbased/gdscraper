@@ -147,7 +147,7 @@ func sanityWeekOverview(weeks *TempWeeks) *TempWeeks {
 	}
 	//TODO FINAL RULESET!
 	if veg >= 2 && bloom >= 4 && harvest == 1 {
-		log.Printf("internal.. sanity che=ck passed.. veg: %v bloom: %v harvest: %v\n", veg, bloom, harvest)
+		log.Printf("internal.. sanity check passed.. veg: %v bloom: %v harvest: %v\n", veg, bloom, harvest)
 		weeks.sanity = true
 	} else {
 		log.Println("internal.. sanity check not passed, skip..")
@@ -230,7 +230,7 @@ func main() {
 		var strain = "gorilla-cookies-auto"
 	*/
 	var seedbank = "royal-queen-seeds"
-	var strain = "northern-light"
+	var strain = "purple-queen-automatic"
 	userDiariesList := getUserDiariesListHTML(ctx, seedbank+"/"+strain)
 	diariesListURLs := compileUserDiariesList(userDiariesList)
 
@@ -239,4 +239,5 @@ func main() {
 
 	//var diariesListURLs = []string{"/diaries/171366-grow-journal-by-growwithflow/week/974789", "/diaries/213233-royal-queen-seeds-northern-light-grow-journal-by-eigenheit", "/diaries/209445-zamnesia-seeds-x-10th-anniversary-grow-journal-by-schnabeldino"}
 	getUserDiary(ctx, diariesListURLs, seedbank, strain, tbl)
+	log.Println("success!")
 }
